@@ -1351,16 +1351,48 @@ BOOL isTabSelected = NO;
 
 %hook YTPlayerViewController
 %property (nonatomic, retain) UIPanGestureRecognizer *YouModPanGesture;
+
+%new
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer == self.YouModPanGesture) {
+        UIPanGestureRecognizer *panGesture = (UIPanGestureRecognizer *)gestureRecognizer;
+        CGPoint startLocation = [panGesture locationInView:self.view];
+        CGFloat viewWidth = self.view.bounds.size.width;
+
+        float areaPercent = 0.15;
+        int areaSetting = INTFORVAL(GestureActivationArea);
+        if (areaSetting == 6) areaPercent = 0.10;
+        else if (areaSetting == 1) areaPercent = 0.20;
+        else if (areaSetting == 2) areaPercent = 0.25;
+        else if (areaSetting == 3) areaPercent = 0.30;
+        else if (areaSetting == 4) areaPercent = 0.40;
+        else if (areaSetting == 5) areaPercent = 0.50;
+
+        int leftAction = [[NSUserDefaults standardUserDefaults] objectForKey:LeftSideGesture] ? INTFORVAL(LeftSideGesture) : 1;
+        int rightAction = [[NSUserDefaults standardUserDefaults] objectForKey:RightSideGesture] ? INTFORVAL(RightSideGesture) : 2;
+
+        // 중앙 영역 터치는 즉시 포기 -> 유튜브 기본 기능(쓸어내려 검색창 띄우기 등) 정상 작동
+        if (startLocation.x > viewWidth * areaPercent && startLocation.x < viewWidth * (1.0 - areaPercent)) return NO;
+
+        // 설정에서 '사용 안 함'을 선택한 영역도 즉시 포기
+        if (startLocation.x <= viewWidth * areaPercent && leftAction == 0) return NO;
+        if (startLocation.x >= viewWidth * (1.0 - areaPercent) && rightAction == 0) return NO;
+
+        // 오직 상하(수직) 스와이프일 때만 작동 -> 유튜브의 가로 진행바 탐색에 간섭하지 않음
+        CGPoint velocity = [panGesture velocityInView:self.view];
+        if (fabs(velocity.x) > fabs(velocity.y)) return NO;
+
+        return YES;
+    }
+    return YES;
+}
+
 %new
 - (void)YouModHandlePanGesture:(UIPanGestureRecognizer *)panGestureRecognizer {
     static float initialVolume;
     static float initialBrightness;
-    static BOOL isValidPan = NO; 
     static int controlType = 0; // 1: Brightness, 2: Volume
-    static CGPoint startLocation;
     static CGFloat deadzoneStartingTranslation;
-    static CGFloat adjustedTranslation;
-    static CGFloat deadzoneRadius = 20.0;
     static CGFloat sensitivityFactor = 1.0;
 
     static MPVolumeView *volumeView;
@@ -1378,7 +1410,7 @@ BOOL isTabSelected = NO;
     });
 
     if (panGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        startLocation = [panGestureRecognizer locationInView:self.view];
+        CGPoint startLocation = [panGestureRecognizer locationInView:self.view];
         CGFloat viewWidth = self.view.bounds.size.width;
 
         float areaPercent = 0.15;
@@ -1401,69 +1433,46 @@ BOOL isTabSelected = NO;
             controlType = 0; // 중앙 영역
         }
         
-        isValidPan = NO;
+        deadzoneStartingTranslation = [panGestureRecognizer translationInView:self.view].y;
+        
+        if (controlType == 1) {
+            initialBrightness = [UIScreen mainScreen].brightness;
+        } else if (controlType == 2) {
+            initialVolume = [[AVAudioSession sharedInstance] outputVolume];
+        }
     }
 
     if (panGestureRecognizer.state == UIGestureRecognizerStateChanged) {
-        if (controlType == 0) {
-            // 중앙 영역에서 시작된 제스처는 취소하여 유튜브 기본 스와이프/스크롤과 충돌 방지
-            panGestureRecognizer.state = UIGestureRecognizerStateCancelled;
-            return;
-        }
-
-        CGPoint translation = [panGestureRecognizer translationInView:self.view];
+        if (controlType == 0) return;
         
-        if (!isValidPan) {
-            CGFloat distanceFromStart = hypot(translation.x, translation.y);
-            if (distanceFromStart < deadzoneRadius) return; // 20픽셀 이상 움직일 때까지 대기 (손가락 떨림 무시)
-
-            BOOL isPrimaryAxis = fabs(translation.y) > fabs(translation.x);
-            if (isPrimaryAxis) {
-                isValidPan = YES;
-                deadzoneStartingTranslation = translation.y;
-                
-                if (controlType == 1) {
-                    initialBrightness = [UIScreen mainScreen].brightness;
-                } else {
-                    initialVolume = [[AVAudioSession sharedInstance] outputVolume];
-                }
-            } else {
-                panGestureRecognizer.state = UIGestureRecognizerStateCancelled;
-                return;
-            }
-        }
-
-        if (isValidPan) {
-            adjustedTranslation = translation.y - deadzoneStartingTranslation;
-            
-            // 상하 스와이프: 위로 갈수록(translation.y 감소) 값 증가
-            float delta = (-adjustedTranslation / self.view.bounds.size.height) * sensitivityFactor;
-            
-            if (controlType == 1) {
-                float newBrightness = fmaxf(fminf(initialBrightness + delta, 1.0), 0.0);
-                [[UIScreen mainScreen] setBrightness:newBrightness];
-            } else if (controlType == 2) {
-                float newVolume = fmaxf(fminf(initialVolume + delta, 1.0), 0.0);
-                volumeViewSlider.value = newVolume;
-            }
+        CGPoint translation = [panGestureRecognizer translationInView:self.view];
+        CGFloat adjustedTranslation = translation.y - deadzoneStartingTranslation;
+        
+        // 상하 스와이프: 위로 갈수록(translation.y 감소) 값 증가
+        float delta = (-adjustedTranslation / self.view.bounds.size.height) * sensitivityFactor;
+        
+        if (controlType == 1) {
+            float newBrightness = fmaxf(fminf(initialBrightness + delta, 1.0), 0.0);
+            [[UIScreen mainScreen] setBrightness:newBrightness];
+        } else if (controlType == 2) {
+            float newVolume = fmaxf(fminf(initialVolume + delta, 1.0), 0.0);
+            volumeViewSlider.value = newVolume;
         }
     }
 }
 
+%new
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    // 우리의 제스처(밝기/볼륨)가 작동할 때는 유튜브의 다른 스와이프 기능(관련 동영상 등)이 강제로 멈추도록 우선권을 가져옵니다.
+    if (gestureRecognizer == self.YouModPanGesture && [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        return YES;
+    }
+    return NO;
+}
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] && [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
-        YTMainAppVideoPlayerOverlayViewController *mainVideoPlayerController = (YTMainAppVideoPlayerOverlayViewController *)self.childViewControllers.firstObject;
-        YTPlayerBarController *playerBarController = mainVideoPlayerController.playerBarController;
-        YTInlinePlayerBarContainerView *playerBar = playerBarController.playerBar;
-        
-        // Priority to seeking and scrubbing
-        if (otherGestureRecognizer == playerBar.scrubGestureRecognizer) return NO;
-        
-        YTFineScrubberFilmstripView *fineScrubberFilmstrip = playerBar.fineScrubberFilmstrip;
-        if (!fineScrubberFilmstrip) return YES;
-        
-        YTFineScrubberFilmstripCollectionView *filmstripCollectionView = [fineScrubberFilmstrip valueForKey:@"_filmstripCollectionView"];
-        if (filmstripCollectionView && otherGestureRecognizer == filmstripCollectionView.panGestureRecognizer) return NO;
+    if (gestureRecognizer == self.YouModPanGesture) {
+        return NO; // 제스처가 겹칠 때 유튜브 기본 스와이프와 동시 다발적으로 일어나는 것을 방지합니다.
     }
     return YES;
 }
