@@ -144,7 +144,7 @@ jobs:
         uses: levibostian/action-hide-sensitive-inputs@v1
         with:
           exclude_inputs: bundle_id,display_name,youpip,ytuhd,ryd,abconfig,youquality,youspeed,youmute,youloop,ytweaks,youslider,ytholdspeed,youchoose,youshare,gonerino,getcap,demc,ytshare,volboost
-          
+
       - name: Download and Validate IPA
         run: |
           wget "${{ inputs.ipa_url }}" --quiet --no-verbose -O youtube.ipa
@@ -156,7 +156,7 @@ jobs:
             exit 1
           fi
 
-      - name: Get YouTube Version 
+      - name: Get YouTube Version
         run: |
           unzip -q youtube.ipa -d ytextracted
           echo "YT_VERSION=$(grep -A 1 '<key>CFBundleVersion</key>' ytextracted/Payload/YouTube.app/Info.plist | grep '<string>' | awk -F'[><]' '{print $3}')" >> $GITHUB_ENV
@@ -171,7 +171,7 @@ jobs:
 
       - name: Clone Theos
         run: git clone --quiet --depth=1 --recurse-submodules https://github.com/theos/theos.git
-           
+
       - name: Download iOS SDK
         run: |
           git clone --quiet --depth=1 -n --filter=tree:0 https://github.com/Tonwalter888/iOS-SDKs.git
@@ -184,8 +184,8 @@ jobs:
         run: |
           pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
           wget --quiet --no-verbose "https://github.com/inoahdev/tbd/releases/download/2.2/tbd-mac" -O /usr/local/bin/tbd
-          chmod +x /usr/local/bin/tbd 
-          
+          chmod +x /usr/local/bin/tbd
+
       - name: Clone Open in YouTube (Safari Extension)
         run: |
           git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/BillyCurtis/OpenYouTubeSafariExtension.git
@@ -196,40 +196,40 @@ jobs:
 
       - name: Clone YouTubeHeader
         run: |
-           git clone --quiet --depth=1 https://github.com/PoomSmart/YouTubeHeader.git $THEOS/include/YouTubeHeader
-           if [ "${{ inputs.demc }}" = "true" ]; then
-            cp -r "$THEOS/include/YouTubeHeader" "$THEOS/include/YTHeaders"
-           fi
+          git clone --quiet --depth=1 https://github.com/PoomSmart/YouTubeHeader.git $THEOS/include/YouTubeHeader
+          if [ "${{ inputs.demc }}" = "true" ]; then
+           cp -r "$THEOS/include/YouTubeHeader" "$THEOS/include/YTHeaders"
+          fi
 
       - name: Clone PSHeader
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git $THEOS/include/PSHeader
 
       - name: Clone YouMod
-        run: git clone --quiet --depth=1 https://github.com/Tonwalter888/YouMod.git
+        run: git clone --quiet --depth=1 https://github.com/8E7B/YouMod-Test.git YouMod
 
       - name: Clone YouPiP
         if: ${{ inputs.youpip }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouPiP.git
-    
+
       - name: Clone YTUHD
         if: ${{ inputs.ytuhd }}
         run: git clone --quiet --depth=1 https://github.com/Tonwalter888/YTUHD.git
-           
+
       - name: Clone Return-YouTube-Dislikes
         if: ${{ inputs.ryd }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/Return-YouTube-Dislikes.git
 
       - name: Clone YouGroupSettings
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouGroupSettings.git
-           
+
       - name: Clone YTVideoOverlay
         if: ${{ inputs.youpip || inputs.ytuhd || inputs.youquality || inputs.youspeed || inputs.youmute || inputs.youloop || inputs.youshare || inputs.getcap }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTVideoOverlay.git
-          
+
       - name: Clone YTABConfig
         if: ${{ inputs.abconfig }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTABConfig.git
-                  
+
       - name: Clone YouQuality
         if: ${{ inputs.youquality }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouQuality.git
@@ -245,7 +245,7 @@ jobs:
       - name: Clone YouMute
         if: ${{ inputs.youmute }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouMute.git
-    
+
       - name: Clone YouLoop
         if: ${{ inputs.youloop }}
         run: git clone --quiet --depth=1 https://github.com/bhackel/YouLoop.git
@@ -296,7 +296,7 @@ jobs:
           echo "YOUMOD_VERSION=$(grep '^Version:' control | cut -d ' ' -f2)" >> $GITHUB_ENV
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youmod.deb
-        
+
       - name: Build YouPiP
         if: ${{ inputs.youpip }}
         run: |
@@ -415,7 +415,7 @@ jobs:
           cd YTweaks
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/ytweaks.deb
-          
+
       - name: Build Gonerino
         if: ${{ inputs.gonerino }}
         run: |
@@ -444,7 +444,7 @@ jobs:
           cd VolumeBoostYT
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
           mv packages/*.deb ${{ github.workspace }}/volboostyt.deb
-          
+
       - name: Inject Tweaks Into IPA
         run: |
           tweaks="OpenYouTubeSafariExtension.appex"
@@ -452,14 +452,14 @@ jobs:
           for f in *.deb; do
             tweaks="$tweaks $f"
           done
-          
+
           cyan -i youtube.ipa -o YouMod_${{ env.YT_VERSION }}_v${{ env.YOUMOD_VERSION }}.ipa -uwef $tweaks -n "${{ inputs.display_name }}" -b ${{ inputs.bundle_id }}
 
       - name: Create a Draft Release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: youmod-ipa${{ github.run_number }}
-          name: YouMod_${{ env.YT_VERSION }}_v${{ env.YOUMOD_VERSION }} (${{ github.run_number }}) 
+          name: YouMod_${{ env.YT_VERSION }}_v${{ env.YOUMOD_VERSION }} (${{ github.run_number }})
           files: YouMod_${{ env.YT_VERSION }}_v${{ env.YOUMOD_VERSION }}.ipa
           draft: true
 
@@ -469,8 +469,8 @@ jobs:
 
       - name: Job Summary - Output the Draft Release Link
         run: |
-          echo -e '### 🚀 Draft Release\n\nDraft release has been created successfully! You can view your release here: https://github.com/${{ github.repository }}/releases' >> $GITHUB_STEP_SUMMARY     
-          
+          echo -e '### 🚀 Draft Release\n\nDraft release has been created successfully! You can view your release here: https://github.com/${{ github.repository }}/releases' >> $GITHUB_STEP_SUMMARY
+
       - name: Job Summary - Cleanup
         run: |
           echo -e '### 🧹 Cleanup\n\nYou can remove previous GitHub Actions run here: https://github.com/${{ github.repository }}/actions/workflows/delete-old-workflows-run.yml And if you want to delelte old draft releases you have then here: https://github.com/${{ github.repository }}/actions/workflows/delete-old-draft-releases.yml' >> $GITHUB_STEP_SUMMARY
