@@ -1391,26 +1391,15 @@ BOOL isTabSelected = NO;
         else if (areaSetting == 4) areaPercent = 0.40;
         else if (areaSetting == 5) areaPercent = 0.50;
 
-        BOOL invert = IS_ENABLED(GestureControlsInvert);
-        int val1 = invert ? 2 : 1; // 1: 밝기, 2: 볼륨
-        int val2 = invert ? 1 : 2;
+        int leftAction = [[NSUserDefaults standardUserDefaults] objectForKey:LeftSideGesture] ? INTFORVAL(LeftSideGesture) : 1;
+        int rightAction = [[NSUserDefaults standardUserDefaults] objectForKey:RightSideGesture] ? INTFORVAL(RightSideGesture) : 2;
 
-        if (IS_ENABLED(VerticalGestures)) {
-            if (startLocation.x <= viewWidth * areaPercent) {
-                controlType = val1; 
-            } else if (startLocation.x >= viewWidth * (1.0 - areaPercent)) {
-                controlType = val2;
-            } else {
-                controlType = 0; // 중앙 영역
-            }
+        if (startLocation.x <= viewWidth * areaPercent) {
+            controlType = leftAction; 
+        } else if (startLocation.x >= viewWidth * (1.0 - areaPercent)) {
+            controlType = rightAction;
         } else {
-            if (startLocation.y <= viewHeight * areaPercent) {
-                controlType = val1; 
-            } else if (startLocation.y >= viewHeight * (1.0 - areaPercent)) {
-                controlType = val2;
-            } else {
-                controlType = 0; // 중앙 영역
-            }
+            controlType = 0; // 중앙 영역
         }
         
         isValidPan = NO;
@@ -1429,10 +1418,10 @@ BOOL isTabSelected = NO;
             CGFloat distanceFromStart = hypot(translation.x, translation.y);
             if (distanceFromStart < deadzoneRadius) return; // 20픽셀 이상 움직일 때까지 대기 (손가락 떨림 무시)
 
-            BOOL isPrimaryAxis = IS_ENABLED(VerticalGestures) ? (fabs(translation.y) > fabs(translation.x)) : (fabs(translation.x) > fabs(translation.y));
+            BOOL isPrimaryAxis = fabs(translation.y) > fabs(translation.x);
             if (isPrimaryAxis) {
                 isValidPan = YES;
-                deadzoneStartingTranslation = IS_ENABLED(VerticalGestures) ? translation.y : translation.x;
+                deadzoneStartingTranslation = translation.y;
                 
                 if (controlType == 1) {
                     initialBrightness = [UIScreen mainScreen].brightness;
@@ -1446,16 +1435,10 @@ BOOL isTabSelected = NO;
         }
 
         if (isValidPan) {
-            adjustedTranslation = (IS_ENABLED(VerticalGestures) ? translation.y : translation.x) - deadzoneStartingTranslation;
+            adjustedTranslation = translation.y - deadzoneStartingTranslation;
             
-            float delta;
-            if (IS_ENABLED(VerticalGestures)) {
-                // 상하 스와이프: 위로 갈수록(translation.y 감소) 값 증가
-                delta = (-adjustedTranslation / self.view.bounds.size.height) * sensitivityFactor;
-            } else {
-                // 좌우 스와이프: 우측으로 갈수록(translation.x 증가) 값 증가
-                delta = (adjustedTranslation / self.view.bounds.size.width) * sensitivityFactor;
-            }
+            // 상하 스와이프: 위로 갈수록(translation.y 감소) 값 증가
+            float delta = (-adjustedTranslation / self.view.bounds.size.height) * sensitivityFactor;
             
             if (controlType == 1) {
                 float newBrightness = fmaxf(fminf(initialBrightness + delta, 1.0), 0.0);
