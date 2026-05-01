@@ -1379,7 +1379,6 @@ BOOL isTabSelected = NO;
 
     if (panGestureRecognizer.state == UIGestureRecognizerStateBegan) {
         startLocation = [panGestureRecognizer locationInView:self.view];
-        CGFloat viewHeight = self.view.bounds.size.height;
         CGFloat viewWidth = self.view.bounds.size.width;
 
         float areaPercent = 0.15;
