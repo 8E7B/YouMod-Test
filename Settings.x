@@ -342,22 +342,22 @@ static NSString *GetCacheSize() { // YTLite - @dayanch96
                 detailTextBlock:^NSString *() {
                     int val = [[NSUserDefaults standardUserDefaults] objectForKey:@"GestureHUDSize"] ? (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"GestureHUDSize"] : 1;
                     switch (val) {
-                        case 0: return LOC(@"SIZE_SMALL");
-                        case 2: return LOC(@"SIZE_LARGE");
-                        case 3: return LOC(@"SIZE_XLARGE");
-                        case 4: return LOC(@"SIZE_MAX");
+                        case 0: return @"Small (-1)";
+                        case 2: return @"Large (+1)";
+                        case 3: return @"Extra Large (+2)";
+                        case 4: return @"Max (+3)";
                         case 1:
-                        default: return LOC(@"SIZE_NORMAL");
+                        default: return @"Normal (Default)";
                     }
                 }
                 selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
                     int currentVal = [[NSUserDefaults standardUserDefaults] objectForKey:@"GestureHUDSize"] ? (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"GestureHUDSize"] : 1;
                     NSArray <YTSettingsSectionItem *> *rows = @[
-                        [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"SIZE_SMALL") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"GestureHUDSize"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
-                        [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"SIZE_NORMAL") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"GestureHUDSize"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
-                        [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"SIZE_LARGE") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:2 forKey:@"GestureHUDSize"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
-                        [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"SIZE_XLARGE") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:3 forKey:@"GestureHUDSize"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
-                        [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"SIZE_MAX") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:4 forKey:@"GestureHUDSize"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }]
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"Small (-1)" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"GestureHUDSize"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"Normal (Default)" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"GestureHUDSize"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"Large (+1)" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:2 forKey:@"GestureHUDSize"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"Extra Large (+2)" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:3 forKey:@"GestureHUDSize"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"Max (+3)" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:4 forKey:@"GestureHUDSize"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }]
                     ];
                     YTSettingsPickerViewController *picker = [[%c(YTSettingsPickerViewController) alloc] initWithNavTitle:LOC(@"GESTURE_HUD_SIZE") pickerSectionTitle:nil rows:rows selectedItemIndex:currentVal parentResponder:[self parentResponder]];
                     [settingsViewController pushViewController:picker];
@@ -370,18 +370,18 @@ static NSString *GetCacheSize() { // YTLite - @dayanch96
                 detailTextBlock:^NSString *() {
                     int val = [[NSUserDefaults standardUserDefaults] objectForKey:@"GestureHUDPosition"] ? (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"GestureHUDPosition"] : 0;
                     switch (val) {
-                        case 1: return LOC(@"POS_MIDDLE");
-                        case 2: return LOC(@"POS_BOTTOM");
+                        case 1: return @"Middle";
+                        case 2: return @"Bottom";
                         case 0:
-                        default: return LOC(@"POS_TOP");
+                        default: return @"Top";
                     }
                 }
                 selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
                     int currentVal = [[NSUserDefaults standardUserDefaults] objectForKey:@"GestureHUDPosition"] ? (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"GestureHUDPosition"] : 0;
                     NSArray <YTSettingsSectionItem *> *rows = @[
-                        [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"POS_TOP") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"GestureHUDPosition"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
-                        [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"POS_MIDDLE") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"GestureHUDPosition"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
-                        [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"POS_BOTTOM") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:2 forKey:@"GestureHUDPosition"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }]
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"Top" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"GestureHUDPosition"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"Middle" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"GestureHUDPosition"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"Bottom" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:2 forKey:@"GestureHUDPosition"]; [[NSUserDefaults standardUserDefaults] synchronize]; [settingsViewController reloadData]; return YES; }]
                     ];
                     YTSettingsPickerViewController *picker = [[%c(YTSettingsPickerViewController) alloc] initWithNavTitle:LOC(@"GESTURE_HUD_POSITION") pickerSectionTitle:nil rows:rows selectedItemIndex:currentVal parentResponder:[self parentResponder]];
                     [settingsViewController pushViewController:picker];
