@@ -103,14 +103,6 @@
 "GESTURE_HUD_SIZE_DESC" = "Adjust the text and icon size of the gesture HUD.";
 "GESTURE_HUD_POSITION" = "Gesture HUD position";
 "GESTURE_HUD_POSITION_DESC" = "Set the vertical position of the gesture HUD (Top, Middle, Bottom).";
-"SIZE_SMALL" = "Small (-1)";
-"SIZE_NORMAL" = "Normal (Default)";
-"SIZE_LARGE" = "Large (+1)";
-"SIZE_XLARGE" = "Extra Large (+2)";
-"SIZE_MAX" = "Max (+3)";
-"POS_TOP" = "Top";
-"POS_MIDDLE" = "Middle";
-"POS_BOTTOM" = "Bottom";
 "DISABLES_DOUBLE_TAP" = "Disables double tap";
 "DISABLES_DOUBLE_TAP_DESC" = "Disables double tap to seek in the video overlay.";
 "DISABLES_LONG_HOLD" = "Disables long hold";
