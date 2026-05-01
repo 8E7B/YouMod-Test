@@ -1382,21 +1382,34 @@ BOOL isTabSelected = NO;
         CGFloat viewHeight = self.view.bounds.size.height;
         CGFloat viewWidth = self.view.bounds.size.width;
 
+        float areaPercent = 0.15;
+        int areaSetting = INTFORVAL(GestureActivationArea);
+        if (areaSetting == 6) areaPercent = 0.10;
+        else if (areaSetting == 1) areaPercent = 0.20;
+        else if (areaSetting == 2) areaPercent = 0.25;
+        else if (areaSetting == 3) areaPercent = 0.30;
+        else if (areaSetting == 4) areaPercent = 0.40;
+        else if (areaSetting == 5) areaPercent = 0.50;
+
+        BOOL invert = IS_ENABLED(GestureControlsInvert);
+        int val1 = invert ? 2 : 1; // 1: 밝기, 2: 볼륨
+        int val2 = invert ? 1 : 2;
+
         if (IS_ENABLED(VerticalGestures)) {
-            // 수직(상하) 스와이프: 좌우 끝 15% 영역에서만 작동 (중앙 70%는 유튜브 기본 조작 허용)
-            if (startLocation.x <= viewWidth * 0.15) {
-                controlType = 1; 
-            } else if (startLocation.x >= viewWidth * 0.85) {
-                controlType = 2;
+            if (startLocation.x <= viewWidth * areaPercent) {
+                controlType = val1; 
+            } else if (startLocation.x >= viewWidth * (1.0 - areaPercent)) {
+                controlType = val2;
             } else {
                 controlType = 0; // 중앙 영역
             }
         } else {
-            // 수평(좌우) 스와이프: 상단 반은 밝기, 하단 반은 볼륨
-            if (startLocation.y <= viewHeight / 2.0) {
-                controlType = 1; 
+            if (startLocation.y <= viewHeight * areaPercent) {
+                controlType = val1; 
+            } else if (startLocation.y >= viewHeight * (1.0 - areaPercent)) {
+                controlType = val2;
             } else {
-                controlType = 2;
+                controlType = 0; // 중앙 영역
             }
         }
         

@@ -248,6 +248,47 @@ static NSString *GetCacheSize() { // YTLite - @dayanch96
             BASIC_SWITCH(LOC(@"HIDE_WATERMARK"), LOC(@"HIDE_WATERMARK_DESC"), HideWaterMark),
             BASIC_SWITCH(LOC(@"GESTURES"), LOC(@"GESTURES_DESC"), GestureControls),
             BASIC_SWITCH(LOC(@"VERTICAL_GESTURES"), LOC(@"VERTICAL_GESTURES_DESC"), VerticalGestures),
+            [YTSettingsSectionItemClass itemWithTitle:LOC(@"GESTURE_AREA")
+                titleDescription:LOC(@"GESTURE_AREA_DESC")
+                accessibilityIdentifier:nil
+                detailTextBlock:^NSString *() {
+                    switch (INTFORVAL(GestureActivationArea)) {
+                        case 6: return @"10%";
+                        case 1: return @"20%";
+                        case 2: return @"25%";
+                        case 3: return @"30%";
+                        case 4: return @"40%";
+                        case 5: return @"50% (절반)";
+                        case 0:
+                        default: return @"15% (기본)";
+                    }
+                }
+                selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
+                    int selectedIndex = 1;
+                    int currentVal = INTFORVAL(GestureActivationArea);
+                    if (currentVal == 6) selectedIndex = 0;
+                    else if (currentVal == 0) selectedIndex = 1;
+                    else if (currentVal == 1) selectedIndex = 2;
+                    else if (currentVal == 2) selectedIndex = 3;
+                    else if (currentVal == 3) selectedIndex = 4;
+                    else if (currentVal == 4) selectedIndex = 5;
+                    else if (currentVal == 5) selectedIndex = 6;
+                    
+                    NSArray <YTSettingsSectionItem *> *rows = @[
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"10%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:6 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"15% (기본)" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"20%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"25%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:2 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"30%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:3 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"40%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:4 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"50% (절반)" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:5 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }]
+                    ];
+                    YTSettingsPickerViewController *picker = [[%c(YTSettingsPickerViewController) alloc] initWithNavTitle:LOC(@"GESTURE_AREA") pickerSectionTitle:nil rows:rows selectedItemIndex:selectedIndex parentResponder:[self parentResponder]];
+                    [settingsViewController pushViewController:picker];
+                    return YES;
+                }
+            ],
+            BASIC_SWITCH(LOC(@"INVERT_GESTURES"), LOC(@"INVERT_GESTURES_DESC"), GestureControlsInvert),
             BASIC_SWITCH(LOC(@"DISABLES_DOUBLE_TAP"), LOC(@"DISABLES_DOUBLE_TAP_DESC"), DisablesDoubleTap),
             BASIC_SWITCH(LOC(@"DISABLES_LONG_HOLD"), LOC(@"DISABLES_LONG_HOLD_DESC"), DisablesLongHold),
             BASIC_SWITCH(LOC(@"AUTO_EXIT_FULLSCREEN"), LOC(@"AUTO_EXIT_FULLSCREEN_DESC"), AutoExitFullScreen),

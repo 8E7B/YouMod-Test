@@ -77,6 +77,8 @@
 #define HideWaterMark @"YouModHideWaterMark"
 #define GestureControls @"YouModEnableGesturesControls"
 #define VerticalGestures @"YouModVerticalGestures"
+#define GestureActivationArea @"YouModGestureActivationArea"
+#define GestureControlsInvert @"YouModGestureControlsInvert"
 #define DisablesDoubleTap @"YouModDisablesDoubleTap"
 #define DisablesLongHold @"YouModDisablesLongHold"
 #define AutoExitFullScreen @"YouModAutoExitFullScreen"
