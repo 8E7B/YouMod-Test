@@ -1426,11 +1426,11 @@ BOOL isTabSelected = NO;
         CGPoint translation = [panGestureRecognizer translationInView:self.view];
         
         if (!isValidPan) {
+            CGFloat distanceFromStart = hypot(translation.x, translation.y);
+            if (distanceFromStart < deadzoneRadius) return; // 20픽셀 이상 움직일 때까지 대기 (손가락 떨림 무시)
+
             BOOL isPrimaryAxis = IS_ENABLED(VerticalGestures) ? (fabs(translation.y) > fabs(translation.x)) : (fabs(translation.x) > fabs(translation.y));
             if (isPrimaryAxis) {
-                CGFloat distanceFromStart = hypot(translation.x, translation.y);
-                if (distanceFromStart < deadzoneRadius) return;
-
                 isValidPan = YES;
                 deadzoneStartingTranslation = IS_ENABLED(VerticalGestures) ? translation.y : translation.x;
                 
