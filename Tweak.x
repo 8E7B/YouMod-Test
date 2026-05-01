@@ -1414,7 +1414,7 @@ BOOL isTabSelected = NO;
 
     if (IS_ENABLED(GestureHUD)) {
         if (!self.YouModGestureHUD) {
-            self.YouModGestureHUD = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 64, 30)];
+            self.YouModGestureHUD = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 74, 30)];
             self.YouModGestureHUD.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
             self.YouModGestureHUD.textColor = [UIColor colorWithWhite:1.0 alpha:0.75];
             self.YouModGestureHUD.textAlignment = NSTextAlignmentCenter;
@@ -1478,11 +1478,11 @@ BOOL isTabSelected = NO;
         if (controlType == 1) {
             float newBrightness = fmaxf(fminf(initialBrightness + delta, 1.0), 0.0);
             [[UIScreen mainScreen] setBrightness:newBrightness];
-            if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.text = [NSString stringWithFormat:@"%d%%", (int)(newBrightness * 100)];
+            if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.text = [NSString stringWithFormat:@"☀︎ %d%%", (int)(newBrightness * 100)];
         } else if (controlType == 2) {
             float newVolume = fmaxf(fminf(initialVolume + delta, 1.0), 0.0);
             volumeViewSlider.value = newVolume;
-            if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.text = [NSString stringWithFormat:@"%d%%", (int)(newVolume * 100)];
+            if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.text = [NSString stringWithFormat:@"🔈︎ %d%%", (int)(newVolume * 100)];
         }
         if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.alpha = 1.0;
     } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded || panGestureRecognizer.state == UIGestureRecognizerStateCancelled || panGestureRecognizer.state == UIGestureRecognizerStateFailed) {
