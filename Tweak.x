@@ -1414,13 +1414,11 @@ BOOL isTabSelected = NO;
 
     if (IS_ENABLED(GestureHUD)) {
         if (!self.YouModGestureHUD) {
-            self.YouModGestureHUD = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 74, 30)];
+            self.YouModGestureHUD = [[UILabel alloc] initWithFrame:CGRectZero];
             self.YouModGestureHUD.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
             self.YouModGestureHUD.textColor = [UIColor colorWithWhite:1.0 alpha:0.75];
             self.YouModGestureHUD.tintColor = [UIColor colorWithWhite:1.0 alpha:0.75];
             self.YouModGestureHUD.textAlignment = NSTextAlignmentCenter;
-            self.YouModGestureHUD.font = [UIFont systemFontOfSize:14];
-            self.YouModGestureHUD.layer.cornerRadius = 15;
             self.YouModGestureHUD.layer.masksToBounds = YES;
             self.YouModGestureHUD.alpha = 0.0;
             [self.view addSubview:self.YouModGestureHUD];
@@ -1462,8 +1460,23 @@ BOOL isTabSelected = NO;
         }
 
         if (IS_ENABLED(GestureHUD)) {
+            int sizeSetting = [[NSUserDefaults standardUserDefaults] objectForKey:@"GestureHUDSize"] ? (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"GestureHUDSize"] : 1;
+            CGFloat fontSize = 14.0 + (sizeSetting * 2.0);
+            CGFloat hudWidth = 74.0 + (sizeSetting * 10.0);
+            CGFloat hudHeight = 30.0 + (sizeSetting * 4.0);
+            
+            self.YouModGestureHUD.frame = CGRectMake(0, 0, hudWidth, hudHeight);
+            self.YouModGestureHUD.layer.cornerRadius = hudHeight / 2.0;
+            self.YouModGestureHUD.font = [UIFont boldSystemFontOfSize:fontSize];
+
+            int posSetting = [[NSUserDefaults standardUserDefaults] objectForKey:@"GestureHUDPosition"] ? (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"GestureHUDPosition"] : 0;
+            CGFloat viewHeight = self.view.bounds.size.height;
+            CGFloat centerY = viewHeight / 6.0;
+            if (posSetting == 1) centerY = viewHeight / 2.0;
+            else if (posSetting == 2) centerY = viewHeight * 5.0 / 6.0;
+
             [self.view bringSubviewToFront:self.YouModGestureHUD];
-            self.YouModGestureHUD.center = CGPointMake(viewWidth / 2, self.view.bounds.size.height / 6);
+            self.YouModGestureHUD.center = CGPointMake(viewWidth / 2, centerY);
         }
     }
 
@@ -1496,7 +1509,7 @@ BOOL isTabSelected = NO;
             UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:self.YouModGestureHUD.font.pointSize - 1];
             UIImage *icon = [UIImage systemImageNamed:symbolName withConfiguration:config];
             attachment.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            CGFloat iconY = -1.5;
+            CGFloat iconY = (self.YouModGestureHUD.font.capHeight - attachment.image.size.height) / 2.0;
             attachment.bounds = CGRectMake(0, iconY, attachment.image.size.width, attachment.image.size.height);
             NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
             NSAttributedString *textString = [[NSAttributedString alloc] initWithString:percentString attributes:@{NSFontAttributeName: self.YouModGestureHUD.font, NSForegroundColorAttributeName: self.YouModGestureHUD.textColor}];
