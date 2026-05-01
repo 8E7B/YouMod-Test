@@ -1355,11 +1355,11 @@ BOOL isTabSelected = NO;
 - (void)YouModHandlePanGesture:(UIPanGestureRecognizer *)panGestureRecognizer {
     static float initialVolume;
     static float initialBrightness;
-    static BOOL isValidHorizontalPan = NO; 
-    static GestureSection gestureSection = GestureSectionInvalid;
+    static BOOL isValidPan = NO; 
+    static int controlType = 0; // 1: Brightness, 2: Volume
     static CGPoint startLocation;
-    static CGFloat deadzoneStartingXTranslation;
-    static CGFloat adjustedTranslationX;
+    static CGFloat deadzoneStartingTranslation;
+    static CGFloat adjustedTranslation;
     static CGFloat deadzoneRadius = 20.0;
     static CGFloat sensitivityFactor = 1.0;
 
@@ -1380,28 +1380,40 @@ BOOL isTabSelected = NO;
     if (panGestureRecognizer.state == UIGestureRecognizerStateBegan) {
         startLocation = [panGestureRecognizer locationInView:self.view];
         CGFloat viewHeight = self.view.bounds.size.height;
+        CGFloat viewWidth = self.view.bounds.size.width;
 
-        if (startLocation.y <= viewHeight / 2.0) {
-            gestureSection = GestureSectionTop; 
+        if (IS_ENABLED(VerticalGestures)) {
+            // 수직(상하) 스와이프: 좌측 반은 밝기, 우측 반은 볼륨
+            if (startLocation.x <= viewWidth / 2.0) {
+                controlType = 1; 
+            } else {
+                controlType = 2;
+            }
         } else {
-            gestureSection = GestureSectionBottom;
+            // 수평(좌우) 스와이프: 상단 반은 밝기, 하단 반은 볼륨
+            if (startLocation.y <= viewHeight / 2.0) {
+                controlType = 1; 
+            } else {
+                controlType = 2;
+            }
         }
         
-        isValidHorizontalPan = NO;
+        isValidPan = NO;
     }
 
     if (panGestureRecognizer.state == UIGestureRecognizerStateChanged) {
         CGPoint translation = [panGestureRecognizer translationInView:self.view];
         
-        if (!isValidHorizontalPan) {
-            if (fabs(translation.x) > fabs(translation.y)) {
+        if (!isValidPan) {
+            BOOL isPrimaryAxis = IS_ENABLED(VerticalGestures) ? (fabs(translation.y) > fabs(translation.x)) : (fabs(translation.x) > fabs(translation.y));
+            if (isPrimaryAxis) {
                 CGFloat distanceFromStart = hypot(translation.x, translation.y);
                 if (distanceFromStart < deadzoneRadius) return;
 
-                isValidHorizontalPan = YES;
-                deadzoneStartingXTranslation = translation.x;
+                isValidPan = YES;
+                deadzoneStartingTranslation = IS_ENABLED(VerticalGestures) ? translation.y : translation.x;
                 
-                if (gestureSection == GestureSectionTop) {
+                if (controlType == 1) {
                     initialBrightness = [UIScreen mainScreen].brightness;
                 } else {
                     initialVolume = [[AVAudioSession sharedInstance] outputVolume];
@@ -1412,16 +1424,22 @@ BOOL isTabSelected = NO;
             }
         }
 
-        if (isValidHorizontalPan) {
-            adjustedTranslationX = translation.x - deadzoneStartingXTranslation;
+        if (isValidPan) {
+            adjustedTranslation = (IS_ENABLED(VerticalGestures) ? translation.y : translation.x) - deadzoneStartingTranslation;
             
-            // Calculate delta based on screen width
-            float delta = (adjustedTranslationX / self.view.bounds.size.width) * sensitivityFactor;
+            float delta;
+            if (IS_ENABLED(VerticalGestures)) {
+                // 상하 스와이프: 위로 갈수록(translation.y 감소) 값 증가
+                delta = (-adjustedTranslation / self.view.bounds.size.height) * sensitivityFactor;
+            } else {
+                // 좌우 스와이프: 우측으로 갈수록(translation.x 증가) 값 증가
+                delta = (adjustedTranslation / self.view.bounds.size.width) * sensitivityFactor;
+            }
             
-            if (gestureSection == GestureSectionTop) {
+            if (controlType == 1) {
                 float newBrightness = fmaxf(fminf(initialBrightness + delta, 1.0), 0.0);
                 [[UIScreen mainScreen] setBrightness:newBrightness];
-            } else if (gestureSection == GestureSectionBottom) {
+            } else if (controlType == 2) {
                 float newVolume = fmaxf(fminf(initialVolume + delta, 1.0), 0.0);
                 volumeViewSlider.value = newVolume;
             }
