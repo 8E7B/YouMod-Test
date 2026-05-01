@@ -1417,6 +1417,7 @@ BOOL isTabSelected = NO;
             self.YouModGestureHUD = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 74, 30)];
             self.YouModGestureHUD.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
             self.YouModGestureHUD.textColor = [UIColor colorWithWhite:1.0 alpha:0.75];
+            self.YouModGestureHUD.tintColor = [UIColor colorWithWhite:1.0 alpha:0.75];
             self.YouModGestureHUD.textAlignment = NSTextAlignmentCenter;
             self.YouModGestureHUD.font = [UIFont systemFontOfSize:14];
             self.YouModGestureHUD.layer.cornerRadius = 15;
@@ -1475,14 +1476,32 @@ BOOL isTabSelected = NO;
         // Vertical swipe: Value increases as it goes up (translation.y decreases)
         float delta = (-adjustedTranslation / self.view.bounds.size.height) * sensitivityFactor;
         
+        NSString *symbolName = nil;
+        NSString *percentString = nil;
+
         if (controlType == 1) {
             float newBrightness = fmaxf(fminf(initialBrightness + delta, 1.0), 0.0);
             [[UIScreen mainScreen] setBrightness:newBrightness];
-            if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.text = [NSString stringWithFormat:@"☀︎ %d%%", (int)(newBrightness * 100)];
+            symbolName = @"sun.max.fill";
+            percentString = [NSString stringWithFormat:@" %d%%", (int)(newBrightness * 100)];
         } else if (controlType == 2) {
             float newVolume = fmaxf(fminf(initialVolume + delta, 1.0), 0.0);
             volumeViewSlider.value = newVolume;
-            if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.text = [NSString stringWithFormat:@"🔈︎ %d%%", (int)(newVolume * 100)];
+            symbolName = @"speaker.wave.2.fill";
+            percentString = [NSString stringWithFormat:@" %d%%", (int)(newVolume * 100)];
+        }
+
+        if (IS_ENABLED(GestureHUD) && symbolName) {
+            NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
+            UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:self.YouModGestureHUD.font.pointSize - 1];
+            UIImage *icon = [UIImage systemImageNamed:symbolName withConfiguration:config];
+            attachment.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            CGFloat iconY = -1.5;
+            attachment.bounds = CGRectMake(0, iconY, attachment.image.size.width, attachment.image.size.height);
+            NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
+            NSAttributedString *textString = [[NSAttributedString alloc] initWithString:percentString attributes:@{NSFontAttributeName: self.YouModGestureHUD.font, NSForegroundColorAttributeName: self.YouModGestureHUD.textColor}];
+            [attributedString appendAttributedString:textString];
+            self.YouModGestureHUD.attributedText = attributedString;
         }
         if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.alpha = 1.0;
     } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded || panGestureRecognizer.state == UIGestureRecognizerStateCancelled || panGestureRecognizer.state == UIGestureRecognizerStateFailed) {
