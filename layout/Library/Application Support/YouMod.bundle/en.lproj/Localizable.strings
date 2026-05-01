@@ -89,7 +89,16 @@
 "HIDE_WATERMARK" = "Hide watermark";
 "HIDE_WATERMARK_DESC" = "Hide channel watermark at the bottom of the video overlay.";
 "GESTURES" = "Enable gestures controls";
-"GESTURES_DESC" = "Enables gestures controls in the video overlay.\nTop: Brightness, Bottom: Volume";
+"GESTURES_DESC" = "Swipe up or down on the left/right edges of the video screen to adjust brightness or volume.";
+"GESTURE_AREA" = "Gesture activation area";
+"GESTURE_AREA_DESC" = "Adjust the area on the edges where gestures are active. (Setting to 50% splits the screen in half with no dead zone in the middle.)";
+"LEFT_SIDE_GESTURE" = "Left side swipe gesture";
+"RIGHT_SIDE_GESTURE" = "Right side swipe gesture";
+"GESTURE_BRIGHTNESS" = "Brightness";
+"GESTURE_VOLUME" = "Volume";
+"GESTURE_NONE" = "None";
+"GESTURE_HUD" = "Show gesture HUD";
+"GESTURE_HUD_DESC" = "Displays the current percentage (%) at the top of the screen when adjusting brightness or volume.";
 "DISABLES_DOUBLE_TAP" = "Disables double tap";
 "DISABLES_DOUBLE_TAP_DESC" = "Disables double tap to seek in the video overlay.";
 "DISABLES_LONG_HOLD" = "Disables long hold";
@@ -168,6 +177,7 @@
 "TABBAR" = "Tab bar";
 "DEFAULT_TAB" = "Default startup tab";
 "DEFAULT_TAB_DESC" = "You can select the tab you want to open when opening the app.";
+"Shorts" = "Shorts";
 "HOME_NAME" = "Home";
 "SUBSCRIPT_NAME" = "Subscriptions";
 "LIB_NAME" = "Library (You)";
