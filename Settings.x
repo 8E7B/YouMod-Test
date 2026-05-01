@@ -256,10 +256,12 @@ static NSString *GetCacheSize() { // YTLite - @dayanch96
                         case 1: return @"20%";
                         case 2: return @"25%";
                         case 3: return @"30%";
+                        case 7: return @"35%";
                         case 4: return @"40%";
-                        case 5: return @"50% (절반)";
+                        case 8: return @"45%";
+                        case 5: return @"50%";
                         case 0:
-                        default: return @"15% (기본)";
+                        default: return @"15%";
                     }
                 }
                 selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
@@ -270,17 +272,21 @@ static NSString *GetCacheSize() { // YTLite - @dayanch96
                     else if (currentVal == 1) selectedIndex = 2;
                     else if (currentVal == 2) selectedIndex = 3;
                     else if (currentVal == 3) selectedIndex = 4;
-                    else if (currentVal == 4) selectedIndex = 5;
-                    else if (currentVal == 5) selectedIndex = 6;
+                    else if (currentVal == 7) selectedIndex = 5;
+                    else if (currentVal == 4) selectedIndex = 6;
+                    else if (currentVal == 8) selectedIndex = 7;
+                    else if (currentVal == 5) selectedIndex = 8;
                     
                     NSArray <YTSettingsSectionItem *> *rows = @[
                         [YTSettingsSectionItemClass checkmarkItemWithTitle:@"10%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:6 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
-                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"15% (기본)" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"15%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
                         [YTSettingsSectionItemClass checkmarkItemWithTitle:@"20%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
                         [YTSettingsSectionItemClass checkmarkItemWithTitle:@"25%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:2 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
                         [YTSettingsSectionItemClass checkmarkItemWithTitle:@"30%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:3 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"35%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:7 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
                         [YTSettingsSectionItemClass checkmarkItemWithTitle:@"40%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:4 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
-                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"50% (절반)" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:5 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }]
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"45%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:8 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }],
+                        [YTSettingsSectionItemClass checkmarkItemWithTitle:@"50%" titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) { [[NSUserDefaults standardUserDefaults] setInteger:5 forKey:GestureActivationArea]; [settingsViewController reloadData]; return YES; }]
                     ];
                     YTSettingsPickerViewController *picker = [[%c(YTSettingsPickerViewController) alloc] initWithNavTitle:LOC(@"GESTURE_AREA") pickerSectionTitle:nil rows:rows selectedItemIndex:selectedIndex parentResponder:[self parentResponder]];
                     [settingsViewController pushViewController:picker];

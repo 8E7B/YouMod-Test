@@ -1366,20 +1366,22 @@ BOOL isTabSelected = NO;
         else if (areaSetting == 1) areaPercent = 0.20;
         else if (areaSetting == 2) areaPercent = 0.25;
         else if (areaSetting == 3) areaPercent = 0.30;
+        else if (areaSetting == 7) areaPercent = 0.35;
         else if (areaSetting == 4) areaPercent = 0.40;
+        else if (areaSetting == 8) areaPercent = 0.45;
         else if (areaSetting == 5) areaPercent = 0.50;
 
         int leftAction = [[NSUserDefaults standardUserDefaults] objectForKey:LeftSideGesture] ? INTFORVAL(LeftSideGesture) : 1;
         int rightAction = [[NSUserDefaults standardUserDefaults] objectForKey:RightSideGesture] ? INTFORVAL(RightSideGesture) : 2;
 
-        // 중앙 영역 터치는 즉시 포기 -> 유튜브 기본 기능(쓸어내려 검색창 띄우기 등) 정상 작동
+        // Ignore touches in the center area -> YouTube's default features (swipe down to dismiss, etc.) work normally
         if (startLocation.x > viewWidth * areaPercent && startLocation.x < viewWidth * (1.0 - areaPercent)) return NO;
 
-        // 설정에서 '사용 안 함'을 선택한 영역도 즉시 포기
+        // Ignore touches in the area where 'None' is selected in settings
         if (startLocation.x <= viewWidth * areaPercent && leftAction == 0) return NO;
         if (startLocation.x >= viewWidth * (1.0 - areaPercent) && rightAction == 0) return NO;
 
-        // 오직 상하(수직) 스와이프일 때만 작동 -> 유튜브의 가로 진행바 탐색에 간섭하지 않음
+        // Only works for vertical swipes -> Does not interfere with YouTube's horizontal seek bar
         CGPoint velocity = [panGesture velocityInView:self.view];
         if (fabs(velocity.x) > fabs(velocity.y)) return NO;
 
@@ -1434,7 +1436,9 @@ BOOL isTabSelected = NO;
         else if (areaSetting == 1) areaPercent = 0.20;
         else if (areaSetting == 2) areaPercent = 0.25;
         else if (areaSetting == 3) areaPercent = 0.30;
+        else if (areaSetting == 7) areaPercent = 0.35;
         else if (areaSetting == 4) areaPercent = 0.40;
+        else if (areaSetting == 8) areaPercent = 0.45;
         else if (areaSetting == 5) areaPercent = 0.50;
 
         int leftAction = [[NSUserDefaults standardUserDefaults] objectForKey:LeftSideGesture] ? INTFORVAL(LeftSideGesture) : 1;
@@ -1445,7 +1449,7 @@ BOOL isTabSelected = NO;
         } else if (startLocation.x >= viewWidth * (1.0 - areaPercent)) {
             controlType = rightAction;
         } else {
-            controlType = 0; // 중앙 영역
+            controlType = 0; // Center area
         }
         
         deadzoneStartingTranslation = [panGestureRecognizer translationInView:self.view].y;
@@ -1468,7 +1472,7 @@ BOOL isTabSelected = NO;
         CGPoint translation = [panGestureRecognizer translationInView:self.view];
         CGFloat adjustedTranslation = translation.y - deadzoneStartingTranslation;
         
-        // 상하 스와이프: 위로 갈수록(translation.y 감소) 값 증가
+        // Vertical swipe: Value increases as it goes up (translation.y decreases)
         float delta = (-adjustedTranslation / self.view.bounds.size.height) * sensitivityFactor;
         
         if (controlType == 1) {
@@ -1492,7 +1496,7 @@ BOOL isTabSelected = NO;
 
 %new
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    // 우리의 제스처(밝기/볼륨)가 작동할 때는 유튜브의 다른 스와이프 기능(관련 동영상 등)이 강제로 멈추도록 우선권을 가져옵니다.
+    // Require other gestures (like YouTube's related videos swipe) to fail when our gesture is active to prevent conflicts.
     if (gestureRecognizer == self.YouModPanGesture && [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         return YES;
     }
@@ -1501,7 +1505,7 @@ BOOL isTabSelected = NO;
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if (gestureRecognizer == self.YouModPanGesture) {
-        return NO; // 제스처가 겹칠 때 유튜브 기본 스와이프와 동시 다발적으로 일어나는 것을 방지합니다.
+        return NO; // Prevents simultaneous recognition with YouTube's default swipe when gestures overlap.
     }
     return YES;
 }
