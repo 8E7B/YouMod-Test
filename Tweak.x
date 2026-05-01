@@ -1383,11 +1383,13 @@ BOOL isTabSelected = NO;
         CGFloat viewWidth = self.view.bounds.size.width;
 
         if (IS_ENABLED(VerticalGestures)) {
-            // 수직(상하) 스와이프: 좌측 반은 밝기, 우측 반은 볼륨
-            if (startLocation.x <= viewWidth / 2.0) {
+            // 수직(상하) 스와이프: 좌우 끝 15% 영역에서만 작동 (중앙 70%는 유튜브 기본 조작 허용)
+            if (startLocation.x <= viewWidth * 0.15) {
                 controlType = 1; 
-            } else {
+            } else if (startLocation.x >= viewWidth * 0.85) {
                 controlType = 2;
+            } else {
+                controlType = 0; // 중앙 영역
             }
         } else {
             // 수평(좌우) 스와이프: 상단 반은 밝기, 하단 반은 볼륨
@@ -1402,6 +1404,12 @@ BOOL isTabSelected = NO;
     }
 
     if (panGestureRecognizer.state == UIGestureRecognizerStateChanged) {
+        if (controlType == 0) {
+            // 중앙 영역에서 시작된 제스처는 취소하여 유튜브 기본 스와이프/스크롤과 충돌 방지
+            panGestureRecognizer.state = UIGestureRecognizerStateCancelled;
+            return;
+        }
+
         CGPoint translation = [panGestureRecognizer translationInView:self.view];
         
         if (!isValidPan) {
