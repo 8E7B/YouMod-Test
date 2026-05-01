@@ -103,14 +103,6 @@
 "GESTURE_HUD_SIZE_DESC" = "제스처 알림창의 텍스트와 아이콘 크기를 설정합니다.";
 "GESTURE_HUD_POSITION" = "제스처 알림창 위치";
 "GESTURE_HUD_POSITION_DESC" = "제스처 알림창이 표시되는 화면 내 위치를 설정합니다 (상단, 중앙, 하단).";
-"SIZE_SMALL" = "작게 (-1)";
-"SIZE_NORMAL" = "보통 (기본)";
-"SIZE_LARGE" = "크게 (+1)";
-"SIZE_XLARGE" = "아주 크게 (+2)";
-"SIZE_MAX" = "가장 크게 (+3)";
-"POS_TOP" = "상단";
-"POS_MIDDLE" = "중앙";
-"POS_BOTTOM" = "하단";
 "DISABLES_DOUBLE_TAP" = "두 번 탭하기 건너뛰기 끄기";
 "DISABLES_DOUBLE_TAP_DESC" = "화면 양옆을 두 번 터치해서 앞뒤로 건너뛰는 기능을 끕니다.";
 "DISABLES_LONG_HOLD" = "길게 눌러 배속하기 끄기";
