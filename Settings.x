@@ -451,6 +451,7 @@ static NSString *GetCacheSize() { // YTLite - @dayanch96
     // Section 6
     // Tab bar
     YTSettingsSectionItem *tabgroup = [YTSettingsSectionItemClass itemWithTitle:LOC(@"TABBAR") accessibilityIdentifier:nil detailTextBlock:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
+        __block YTSettingsPickerViewController *tabPicker = nil;
         NSArray <YTSettingsSectionItem *> *rows = @[
             [YTSettingsSectionItemClass itemWithTitle:LOC(@"DEFAULT_TAB")
             titleDescription:LOC(@"DEFAULT_TAB_DESC")
@@ -472,22 +473,22 @@ static NSString *GetCacheSize() { // YTLite - @dayanch96
                 NSArray <YTSettingsSectionItem *> *rows = @[
                     [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"HOME_NAME") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
                         [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:DefaultTab];
-                        [settingsViewController reloadData];
+                        [[NSUserDefaults standardUserDefaults] synchronize]; [tabPicker reloadData];
                         return YES;
                     }],
                     [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"Shorts") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
                         [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:DefaultTab];
-                        [settingsViewController reloadData];
+                        [[NSUserDefaults standardUserDefaults] synchronize]; [tabPicker reloadData];
                         return YES;
                     }],
                     [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"SUBSCRIPT_NAME") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
                         [[NSUserDefaults standardUserDefaults] setInteger:2 forKey:DefaultTab];
-                        [settingsViewController reloadData];
+                        [[NSUserDefaults standardUserDefaults] synchronize]; [tabPicker reloadData];
                         return YES;
                     }],
                     [YTSettingsSectionItemClass checkmarkItemWithTitle:LOC(@"LIB_NAME") titleDescription:nil selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
                         [[NSUserDefaults standardUserDefaults] setInteger:3 forKey:DefaultTab];
-                        [settingsViewController reloadData];
+                        [[NSUserDefaults standardUserDefaults] synchronize]; [tabPicker reloadData];
                         return YES;
                     }]
                 ];
@@ -502,8 +503,8 @@ static NSString *GetCacheSize() { // YTLite - @dayanch96
             BASIC_SWITCH(LOC(@"HIDE_CREATE_BUTTON"), LOC(@"HIDE_CREATE_BUTTON_DESC"), HideCreateButton),
             BASIC_SWITCH(LOC(@"HIDE_SUBSCRIPT_TAB"), LOC(@"HIDE_SUBSCRIPT_TAB_DESC"), HideSubscriptTab),
         ];        
-        YTSettingsPickerViewController *picker = [[%c(YTSettingsPickerViewController) alloc] initWithNavTitle:LOC(@"TABBAR") pickerSectionTitle:nil rows:rows selectedItemIndex:0 parentResponder:[self parentResponder]];
-        [settingsViewController pushViewController:picker];
+        tabPicker = [[%c(YTSettingsPickerViewController) alloc] initWithNavTitle:LOC(@"TABBAR") pickerSectionTitle:nil rows:rows selectedItemIndex:0 parentResponder:[self parentResponder]];
+        [settingsViewController pushViewController:tabPicker];
         return YES;
     }];
     YTIIcon *icon5 = [%c(YTIIcon) new];
