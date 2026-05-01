@@ -79,6 +79,7 @@
 #define GestureActivationArea @"YouModGestureActivationArea"
 #define LeftSideGesture @"YouModLeftSideGesture"
 #define RightSideGesture @"YouModRightSideGesture"
+#define GestureHUD @"YouModGestureHUD"
 #define DisablesDoubleTap @"YouModDisablesDoubleTap"
 #define DisablesLongHold @"YouModDisablesLongHold"
 #define AutoExitFullScreen @"YouModAutoExitFullScreen"

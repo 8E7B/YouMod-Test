@@ -1351,6 +1351,7 @@ BOOL isTabSelected = NO;
 
 %hook YTPlayerViewController
 %property (nonatomic, retain) UIPanGestureRecognizer *YouModPanGesture;
+%property (nonatomic, retain) UILabel *YouModGestureHUD;
 
 %new
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
@@ -1409,6 +1410,20 @@ BOOL isTabSelected = NO;
         }
     });
 
+    if (IS_ENABLED(GestureHUD)) {
+        if (!self.YouModGestureHUD) {
+            self.YouModGestureHUD = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 120, 40)];
+            self.YouModGestureHUD.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.6];
+            self.YouModGestureHUD.textColor = [UIColor whiteColor];
+            self.YouModGestureHUD.textAlignment = NSTextAlignmentCenter;
+            self.YouModGestureHUD.font = [UIFont boldSystemFontOfSize:16];
+            self.YouModGestureHUD.layer.cornerRadius = 20;
+            self.YouModGestureHUD.layer.masksToBounds = YES;
+            self.YouModGestureHUD.alpha = 0.0;
+            [self.view addSubview:self.YouModGestureHUD];
+        }
+    }
+
     if (panGestureRecognizer.state == UIGestureRecognizerStateBegan) {
         CGPoint startLocation = [panGestureRecognizer locationInView:self.view];
         CGFloat viewWidth = self.view.bounds.size.width;
@@ -1440,6 +1455,11 @@ BOOL isTabSelected = NO;
         } else if (controlType == 2) {
             initialVolume = [[AVAudioSession sharedInstance] outputVolume];
         }
+
+        if (IS_ENABLED(GestureHUD)) {
+            [self.view bringSubviewToFront:self.YouModGestureHUD];
+            self.YouModGestureHUD.center = CGPointMake(viewWidth / 2, self.view.bounds.size.height / 6);
+        }
     }
 
     if (panGestureRecognizer.state == UIGestureRecognizerStateChanged) {
@@ -1454,9 +1474,18 @@ BOOL isTabSelected = NO;
         if (controlType == 1) {
             float newBrightness = fmaxf(fminf(initialBrightness + delta, 1.0), 0.0);
             [[UIScreen mainScreen] setBrightness:newBrightness];
+            if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.text = [NSString stringWithFormat:@"%d%%", (int)(newBrightness * 100)];
         } else if (controlType == 2) {
             float newVolume = fmaxf(fminf(initialVolume + delta, 1.0), 0.0);
             volumeViewSlider.value = newVolume;
+            if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.text = [NSString stringWithFormat:@"%d%%", (int)(newVolume * 100)];
+        }
+        if (IS_ENABLED(GestureHUD)) self.YouModGestureHUD.alpha = 1.0;
+    } else if (panGestureRecognizer.state == UIGestureRecognizerStateEnded || panGestureRecognizer.state == UIGestureRecognizerStateCancelled || panGestureRecognizer.state == UIGestureRecognizerStateFailed) {
+        if (IS_ENABLED(GestureHUD)) {
+            [UIView animateWithDuration:0.3 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^{
+                self.YouModGestureHUD.alpha = 0.0;
+            } completion:nil];
         }
     }
 }
