@@ -92,6 +92,10 @@
 "GESTURES_DESC" = "동영상 화면에서 스와이프 제스처로 밝기 및 볼륨을 조절합니다.\n(기본: 상단 좌우 밝기, 하단 좌우 볼륨)";
 "VERTICAL_GESTURES" = "수직(상하) 제스처 컨트롤";
 "VERTICAL_GESTURES_DESC" = "기존 좌우 제스처 대신 상하로 스와이프하여 조절합니다.\n(화면 좌측: 밝기, 우측: 볼륨)";
+"GESTURE_AREA" = "제스처 작동 영역 범위";
+"GESTURE_AREA_DESC" = "화면 가장자리에서 제스처가 작동하는 범위를 조절합니다. (50% 설정 시 중앙 빈 공간 없이 화면을 반으로 나눕니다.)";
+"INVERT_GESTURES" = "제스처 위치 반전";
+"INVERT_GESTURES_DESC" = "밝기와 볼륨 조절 위치를 서로 바꿉니다. (예: 좌측 볼륨, 우측 밝기로 변경)";
 "DISABLES_DOUBLE_TAP" = "두 번 탭하기 건너뛰기 끄기";
 "DISABLES_DOUBLE_TAP_DESC" = "화면 양옆을 두 번 터치해서 앞뒤로 건너뛰는 기능을 끕니다.";
 "DISABLES_LONG_HOLD" = "길게 눌러 배속하기 끄기";
